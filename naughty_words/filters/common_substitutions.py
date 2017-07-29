@@ -3,7 +3,7 @@ from naughty_words.filters.base import NaughtyWords
 from naughty_words.utils.confusables import standard_character_substitutions, separating_characters
 
 
-class SubstitutedNaughtyWords(NaughtyWords):
+class CommonSubstitutions(NaughtyWords):
 
     def profanity_expression(self, word):
         expression = ''

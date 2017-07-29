@@ -1,7 +1,5 @@
 import re
 import collections
-from naughty_words.profanity.profanities import naughty_word_list
-from difflib import SequenceMatcher
 
 
 class NaughtyWords(object):
