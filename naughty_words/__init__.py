@@ -73,12 +73,7 @@ class NaughtyWords(object):
             cur_text, cur_context = pre.process(cur_text, cur_context)
 
         # TODO: Loop through, run all filters
-        matches = []
+        matches = set()
         for filter in self._filters:
-            if kwargs['only_first']:
-                match = filter.filter(cur_text, cur_context, **kwargs)
-                if match is not []:
-                    return match
-            else:
-                matches.extend(filter.filter(cur_text, cur_context, **kwargs))
-        return matches if matches is not [] else None
+            matches = matches.union(set(filter.filter(cur_text, cur_context, **kwargs)))
+        return matches
