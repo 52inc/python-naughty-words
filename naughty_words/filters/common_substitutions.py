@@ -50,7 +50,7 @@ class CommonSubstitutions(Filter):
             if alpha_num_word is '':
                 continue
             pattern = self.profanity_expression(alpha_num_word, character_substitutions)
-            if re.search(pattern, text):
+            if re.search(pattern, text, re.IGNORECASE):
                 if raise_on_match:
                     raise ProfanityException()
                 elif only_first:
