@@ -12,7 +12,7 @@ def has_profanity(text, additional=None, blacklist=None, profanities=None):
         global profanity_list
         profanities = profanity_list
     if additional:
-        profanities = list(set(profanities).update(set(additional)))
+        profanities = list(set(profanities).union(set(additional)))
     if blacklist:
         profanities = list(set(profanities).difference(set(blacklist)))
     naughty_words = NaughtyWords(preprocessors=[SubstitutionsPreprocessor()],
@@ -26,7 +26,7 @@ def get_all_profanity(text, additional=None, blacklist=None, profanities=None):
         global profanity_list
         profanities = profanity_list
     if additional:
-        profanities = list(set(profanities).update(set(additional)))
+        profanities = list(set(profanities).union(set(additional)))
     if blacklist:
         profanities = list(set(profanities).difference(set(blacklist)))
     naughty_words = NaughtyWords(preprocessors=[SubstitutionsPreprocessor()],
