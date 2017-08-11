@@ -50,11 +50,12 @@ class Filter(object):
 class NaughtyWords(object):
     def __init__(self,
                  preprocessors: Iterable[Type[Preprocessor]]=None,
-                 filters: Iterable[Type[Filter]]=None):
+                 filters: Iterable[Type[Filter]]=None,
+                 profanities: Sequence[str] = None):
 
         self._preprocessors = []
         self._filters = []
-        self._context = {}
+        self._context = {'profanities': profanities}
 
         for p in preprocessors:
             assert isinstance(p, Preprocessor), "Attempted to register an invalid preprocessor"
@@ -62,68 +63,22 @@ class NaughtyWords(object):
 
         for f in filters:
             assert isinstance(f, Filter), "Attempted to register an invalid filter"
-            self._filters.append(p)
-
-    def _algorithm(self, match_type='first'):
-        if self.naughty_words is None or self.text is None:
-            return None
-        if match_type is not 'first':
-            words = []
-
-        for word in self.naughty_words:
-            if self.dumb_string_match(word):
-                if match_type is not 'first':
-                    words.append(word)
-                else:
-                    return word
-            elif self.regex_string_match(word):
-                if match_type is not 'first':
-                    words.append(word)
-                else:
-                    return word
-
-        if match_type is not 'first':
-            return words if words is not [] else None
-        else:
-            return None
+            self._filters.append(f)
 
     def run_filters(self, text, **kwargs):
         cur_text = text
-        cur_context = {}
+        cur_context = self._context
 
         for pre in self._preprocessors:
-            cur_text, cur_context = pre(cur_text, cur_context)
+            cur_text, cur_context = pre.process(cur_text, cur_context)
 
         # TODO: Loop through, run all filters
-        pass
-
-    def dumb_string_match(self, word):
-        return word in self.text
-
-    def regex_string_match(self, word):
-        alpha_num_word = re.sub('\W', '', word)
-        pattern = self.profanity_expression(alpha_num_word)
-        return re.search(pattern, self.text)
-
-    @classmethod
-    def escaped_expression(self, characters, escaped_characters, quantifier='*?'):
-        re_expressions = escaped_characters
-        for character in characters:
-            re_expressions.append(re.escape(character))
-        return f"[{''.join(re_expressions)}]{quantifier}"
-
-    def profanity_expression(self, word):
-        separating_expression = self.escaped_expression('a-zA-Z', ['^'])
-        return r''.join(self.escaped_expression(character, [], '+?') + separating_expression for character in word)
-
-    def first_match(self):
-        self._preprocess()
-        return self._algorithm()
-
-    def all_matches(self):
-        self._preprocess()
-        return self._algorithm(match_type='all')
-
-    def has_profanity(self):
-        self._preprocess()
-        return self._algorithm() is not None
+        matches = []
+        for filter in self._filters:
+            if kwargs['only_first']:
+                match = filter.filter(cur_text, cur_context, **kwargs)
+                if match is not []:
+                    return match
+            else:
+                matches.extend(filter.filter(cur_text, cur_context, **kwargs))
+        return matches if matches is not [] else None

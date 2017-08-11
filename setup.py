@@ -23,6 +23,7 @@ setup(name='naughty_words',
       author_email='evan@52inc.com',
       license='Apache License 2.0',
       packages=find_packages(exclude=['tests']),
+      package_data={'naughty_words': ['wordlists/*.txt']},
       install_requires=[],
       include_package_data=True,
       zip_safe=False
