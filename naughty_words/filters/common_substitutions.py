@@ -30,6 +30,16 @@ class CommonSubstitutions(Filter):
         profanities = context['profanities']
         matches = []
         for profanity in profanities:
+            if profanity in text:
+                if raise_on_match:
+                    raise ProfanityException()
+                elif only_first:
+                    matches.append(profanity)
+                    return matches
+                else:
+                    matches.append(profanity)
+                    continue
+
             # TODO add solidified case for stopping emoji
             alpha_num_word = re.sub('\W', '', profanity)
             if alpha_num_word is '':
