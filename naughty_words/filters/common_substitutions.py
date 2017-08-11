@@ -9,5 +9,8 @@ class CommonSubstitutions(NaughtyWords):
         expression = ''
         separating_expression = self.escaped_expression(separating_characters, ['\s'])
         for character in word:
-            expression = expression + self.escaped_expression(standard_character_substitutions[character], [], '+?') + separating_expression
+            try:
+                expression = expression + self.escaped_expression(standard_character_substitutions[character], [], '+?') + separating_expression
+            except KeyError:
+                expression = expression + self.escaped_expression(character, [], '+?') + separating_expression
         return expression
