@@ -12,12 +12,12 @@ class CommonSubstitutions(Filter):
             re_expressions.append(re.escape(character))
         return f"[{''.join(re_expressions)}]{quantifier}"
 
-    def profanity_expression(self, word):
+    def profanity_expression(self, word, character_substitutions):
         expression = ''
         separating_expression = self.escaped_expression(separating_characters, ['\s'])
         for character in word:
             try:
-                expression = expression + self.escaped_expression(standard_character_substitutions[character], [], '+?') + separating_expression
+                expression = expression + self.escaped_expression(character_substitutions[character], [], '+?') + separating_expression
             except KeyError:
                 expression = expression + self.escaped_expression(character, [], '+?') + separating_expression
 
@@ -28,6 +28,12 @@ class CommonSubstitutions(Filter):
                only_first: bool=True,
                raise_on_match: bool= False):
         profanities = context['profanities']
+
+        try:
+            character_substitutions = context['character_substitutions']
+        except KeyError:
+            character_substitutions = standard_character_substitutions
+
         matches = []
         for profanity in profanities:
             if profanity in text:
@@ -44,7 +50,7 @@ class CommonSubstitutions(Filter):
             alpha_num_word = re.sub('\W', '', profanity)
             if alpha_num_word is '':
                 continue
-            pattern = self.profanity_expression(alpha_num_word)
+            pattern = self.profanity_expression(alpha_num_word, character_substitutions)
             if re.search(pattern, text):
                 if raise_on_match:
                     raise ProfanityException()
@@ -54,5 +60,8 @@ class CommonSubstitutions(Filter):
                 else:
                     matches.append(profanity)
         return matches
+
+
+
 
 

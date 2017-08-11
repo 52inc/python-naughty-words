@@ -1,6 +1,6 @@
 import pkgutil
 from naughty_words import NaughtyWords
-from naughty_words.preprocessors import EmptyPreprocessor
+from naughty_words.preprocessors import SubstitutionsPreprocessor
 from naughty_words.filters import CommonSubstitutions
 
 data = pkgutil.get_data(__name__, 'wordlists/profanities.txt')
@@ -15,7 +15,7 @@ def has_profanity(text, additional=None, blacklist=None, profanities=None):
         profanities = list(set(profanities).update(set(additional)))
     if blacklist:
         profanities = list(set(profanities).difference(set(blacklist)))
-    naughty_words = NaughtyWords(preprocessors=[EmptyPreprocessor()],
+    naughty_words = NaughtyWords(preprocessors=[SubstitutionsPreprocessor()],
                                  filters=[CommonSubstitutions()],
                                  profanities=profanities)
     return len(naughty_words.run_filters(text, only_first=True)) != 0
@@ -29,7 +29,7 @@ def get_all_profanity(text, additional=None, blacklist=None, profanities=None):
         profanities = list(set(profanities).update(set(additional)))
     if blacklist:
         profanities = list(set(profanities).difference(set(blacklist)))
-    naughty_words = NaughtyWords(preprocessors=[EmptyPreprocessor()],
+    naughty_words = NaughtyWords(preprocessors=[SubstitutionsPreprocessor()],
                                  filters=[CommonSubstitutions()],
                                  profanities=profanities)
     return naughty_words.run_filters(text, only_first=False)

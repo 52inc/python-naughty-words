@@ -1,1 +1,2 @@
 from naughty_words.preprocessors.empty_preprocessor import *
+from naughty_words.preprocessors.substitutions_preprocessor import *
